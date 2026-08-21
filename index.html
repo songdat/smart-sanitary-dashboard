@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Smart Sanitary Dispenser
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+    <div class="container">
+
+        <!-- HEADER -->
+
+        <header>
+
+            <div>
+
+                <h1>
+                    🩷 Smart Sanitary Dispenser
+                </h1>
+
+                <p>
+                    IoT Monitoring Dashboard
+                </p>
+
+            </div>
+
+
+            <div
+                id="machineStatus"
+                class="status offline"
+            >
+                ● OFFLINE
+            </div>
+
+        </header>
+
+
+        <!-- MACHINE INFORMATION -->
+
+        <section class="machine-info">
+
+            <div>
+
+                <strong>
+                    Machine
+                </strong>
+
+                <span id="machineCode">
+                    -
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <strong>
+                    Location
+                </strong>
+
+                <span id="location">
+                    -
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- STAT CARDS -->
+
+        <section class="cards">
+
+
+            <div class="card">
+
+                <div class="icon">
+                    📦
+                </div>
+
+                <h3>
+                    Stock
+                </h3>
+
+                <div
+                    id="stock"
+                    class="value"
+                >
+                    0
+                </div>
+
+                <span>
+                    packs remaining
+                </span>
+
+            </div>
+
+
+
+            <div class="card">
+
+                <div class="icon">
+                    💰
+                </div>
+
+                <h3>
+                    Revenue
+                </h3>
+
+                <div
+                    id="revenue"
+                    class="value"
+                >
+                    ฿0
+                </div>
+
+                <span>
+                    total revenue
+                </span>
+
+            </div>
+
+
+
+            <div class="card">
+
+                <div class="icon">
+                    📤
+                </div>
+
+                <h3>
+                    Dispensed
+                </h3>
+
+                <div
+                    id="dispensed"
+                    class="value"
+                >
+                    0
+                </div>
+
+                <span>
+                    total packs
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- LAST TRANSACTION -->
+
+        <section class="panel">
+
+            <h2>
+                🕐 Last Transaction
+            </h2>
+
+            <div
+                id="lastTransaction"
+                class="transaction"
+            >
+                No transaction yet
+            </div>
+
+        </section>
+
+
+        <!-- TRANSACTION TABLE -->
+
+        <section class="panel">
+
+            <h2>
+                📋 Transaction History
+            </h2>
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Time
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Product
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody
+                        id="transactionTable"
+                    >
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- FOOTER -->
+
+        <footer>
+
+            Smart Sanitary Dispenser
+            © 2026
+
+        </footer>
+
+    </div>
+
+
+    <!-- Supabase JavaScript -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+    <!-- Our JavaScript -->
+
+    <script
+        src="app.js"
+    ></script>
+
+</body>
+
+</html>
