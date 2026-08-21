@@ -4,7 +4,7 @@
 
 // ใส่ Project URL ของคุณที่นี่
 const SUPABASE_URL =
-    "epmqjfftonefqyvpucvo.supabase.co";
+    "https://epmqjfftonefqyvpucvo.supabase.co";
 
 
 // ใส่ Publishable Key ของคุณที่นี่
