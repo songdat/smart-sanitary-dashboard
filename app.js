@@ -1,13 +1,13 @@
+
 // ============================================
 // SUPABASE CONFIGURATION
 // ============================================
 
-// ใส่ Project URL ของคุณที่นี่
 const SUPABASE_URL =
     "https://epmqjfftonefqyvpucvo.supabase.co";
 
 
-// ใส่ Publishable Key ของคุณที่นี่
+// Publishable Key
 const SUPABASE_KEY =
     "sb_publishable_t55Blrc8O-PjtsO2ZFiyWA_FNeaod43";
 
@@ -19,7 +19,6 @@ const SUPABASE_KEY =
 const {
     createClient
 } = supabase;
-
 
 const db =
     createClient(
@@ -34,6 +33,60 @@ const db =
 
 const MACHINE_CODE =
     "SANITARY-60";
+
+
+// ============================================
+// REALTIME STATUS
+// ============================================
+
+let realtimeChannel = null;
+
+
+// ============================================
+// UPDATE REALTIME STATUS ON SCREEN
+// ============================================
+
+function updateRealtimeStatus(
+    connected,
+    message
+) {
+
+    const statusElement =
+        document.getElementById(
+            "machineStatus"
+        );
+
+
+    if (!statusElement) {
+        return;
+    }
+
+
+    if (connected) {
+
+        statusElement.textContent =
+            "● REALTIME ONLINE";
+
+        statusElement.className =
+            "status online";
+
+    }
+
+    else {
+
+        statusElement.textContent =
+            "● REALTIME OFFLINE";
+
+        statusElement.className =
+            "status offline";
+    }
+
+
+    console.log(
+        "Realtime:",
+        message
+    );
+}
 
 
 // ============================================
@@ -66,45 +119,94 @@ async function loadMachine() {
             error
         );
 
+        updateRealtimeStatus(
+            false,
+            "Cannot load machine"
+        );
+
         return;
     }
 
 
     // ========================================
-    // UPDATE DASHBOARD
+    // UPDATE MACHINE INFORMATION
     // ========================================
 
-    document
-        .getElementById("machineCode")
-        .textContent =
-        data.machine_code;
+    const machineCodeElement =
+        document.getElementById(
+            "machineCode"
+        );
+
+    if (machineCodeElement) {
+
+        machineCodeElement.textContent =
+            data.machine_code;
+    }
 
 
-    document
-        .getElementById("location")
-        .textContent =
-        data.location;
+    const locationElement =
+        document.getElementById(
+            "location"
+        );
+
+    if (locationElement) {
+
+        locationElement.textContent =
+            data.location;
+    }
 
 
-    document
-        .getElementById("stock")
-        .textContent =
-        data.stock;
+    // ========================================
+    // UPDATE STOCK
+    // ========================================
+
+    const stockElement =
+        document.getElementById(
+            "stock"
+        );
+
+    if (stockElement) {
+
+        stockElement.textContent =
+            data.stock;
+    }
 
 
-    document
-        .getElementById("revenue")
-        .textContent =
-        "฿" +
-        Number(
-            data.total_revenue
-        ).toLocaleString();
+    // ========================================
+    // UPDATE REVENUE
+    // ========================================
+
+    const revenueElement =
+        document.getElementById(
+            "revenue"
+        );
+
+    if (revenueElement) {
+
+        revenueElement.textContent =
+            "฿" +
+            Number(
+                data.total_revenue
+            ).toLocaleString(
+                "th-TH"
+            );
+    }
 
 
-    document
-        .getElementById("dispensed")
-        .textContent =
-        data.total_dispensed;
+    // ========================================
+    // UPDATE DISPENSED
+    // ========================================
+
+    const dispensedElement =
+        document.getElementById(
+            "dispensed"
+        );
+
+    if (dispensedElement) {
+
+        dispensedElement.textContent =
+            data.total_dispensed;
+    }
 
 
     // ========================================
@@ -117,30 +219,36 @@ async function loadMachine() {
         );
 
 
-    if (
-        data.status === "ONLINE"
-    ) {
+    if (statusElement) {
 
-        statusElement.textContent =
-            "● ONLINE";
+        if (
+            data.status === "ONLINE"
+        ) {
 
+            statusElement.textContent =
+                "● ONLINE";
 
-        statusElement.className =
-            "status online";
+            statusElement.className =
+                "status online";
 
+        }
+
+        else {
+
+            statusElement.textContent =
+                "● " +
+                data.status;
+
+            statusElement.className =
+                "status offline";
+        }
     }
 
-    else {
 
-        statusElement.textContent =
-            "● " +
-            data.status;
-
-
-        statusElement.className =
-            "status offline";
-    }
-
+    console.log(
+        "Machine updated:",
+        data
+    );
 }
 
 
@@ -184,6 +292,11 @@ async function loadTransactions() {
         document.getElementById(
             "transactionTable"
         );
+
+
+    if (!table) {
+        return;
+    }
 
 
     table.innerHTML = "";
@@ -238,7 +351,11 @@ async function loadTransactions() {
                 </td>
 
                 <td>
-                    ฿${transaction.amount}
+                    ฿${Number(
+                        transaction.amount
+                    ).toLocaleString(
+                        "th-TH"
+                    )}
                 </td>
 
                 <td>
@@ -262,8 +379,9 @@ async function loadTransactions() {
             `;
 
 
-            table.appendChild(row);
-
+            table.appendChild(
+                row
+            );
         }
     );
 
@@ -282,14 +400,24 @@ async function loadTransactions() {
         );
 
 
-    document
-        .getElementById(
+    const lastTransactionElement =
+        document.getElementById(
             "lastTransaction"
-        )
-        .innerHTML = `
+        );
+
+
+    if (
+        lastTransactionElement
+    ) {
+
+        lastTransactionElement.innerHTML = `
 
             <strong>
-                ฿${latest.amount}
+                ฿${Number(
+                    latest.amount
+                ).toLocaleString(
+                    "th-TH"
+                )}
             </strong>
 
             &nbsp; →
@@ -312,6 +440,223 @@ async function loadTransactions() {
             </small>
 
         `;
+    }
+}
+
+
+// ============================================
+// START REALTIME
+// ============================================
+
+function startRealtime() {
+
+    console.log(
+        "Starting Supabase Realtime..."
+    );
+
+
+    // ----------------------------------------
+    // Remove previous channel
+    // ----------------------------------------
+
+    if (
+        realtimeChannel
+    ) {
+
+        db.removeChannel(
+            realtimeChannel
+        );
+    }
+
+
+    // ----------------------------------------
+    // Create Realtime Channel
+    // ----------------------------------------
+
+    realtimeChannel =
+        db.channel(
+            "smart-sanitary-dashboard"
+        );
+
+
+    // ========================================
+    // MACHINES
+    // ========================================
+
+    realtimeChannel.on(
+        "postgres_changes",
+        {
+            event: "UPDATE",
+            schema: "public",
+            table: "machines",
+            filter:
+                "machine_code=eq." +
+                MACHINE_CODE
+        },
+
+        async payload => {
+
+            console.log(
+                "Realtime MACHINES UPDATE:",
+                payload
+            );
+
+
+            // โหลดข้อมูล machine ใหม่
+            await loadMachine();
+
+        }
+    );
+
+
+    // ========================================
+    // TRANSACTIONS
+    // ========================================
+
+    realtimeChannel.on(
+        "postgres_changes",
+        {
+            event: "INSERT",
+            schema: "public",
+            table: "transactions"
+        },
+
+        async payload => {
+
+            console.log(
+                "Realtime TRANSACTION INSERT:",
+                payload
+            );
+
+
+            // โหลดรายการใหม่
+            await loadTransactions();
+
+
+            // โหลด machine ใหม่ด้วย
+            // เผื่อ stock/revenue ถูก update
+            await loadMachine();
+
+        }
+    );
+
+
+    // ========================================
+    // MACHINE EVENTS
+    // ========================================
+
+    realtimeChannel.on(
+        "postgres_changes",
+        {
+            event: "INSERT",
+            schema: "public",
+            table: "machine_events"
+        },
+
+        payload => {
+
+            console.log(
+                "Realtime MACHINE EVENT:",
+                payload
+            );
+
+        }
+    );
+
+
+    // ========================================
+    // SUBSCRIBE
+    // ========================================
+
+    realtimeChannel.subscribe(
+        (
+            status,
+            error
+        ) => {
+
+            console.log(
+                "Realtime status:",
+                status
+            );
+
+
+            // --------------------------------
+            // CONNECTED
+            // --------------------------------
+
+            if (
+                status === "SUBSCRIBED"
+            ) {
+
+                updateRealtimeStatus(
+                    true,
+                    "Connected"
+                );
+
+                console.log(
+                    "Supabase Realtime CONNECTED"
+                );
+            }
+
+
+            // --------------------------------
+            // ERROR
+            // --------------------------------
+
+            else if (
+                status === "CHANNEL_ERROR"
+            ) {
+
+                updateRealtimeStatus(
+                    false,
+                    "Channel error"
+                );
+
+
+                console.error(
+                    "Realtime CHANNEL_ERROR:",
+                    error
+                );
+            }
+
+
+            // --------------------------------
+            // TIMEOUT
+            // --------------------------------
+
+            else if (
+                status === "TIMED_OUT"
+            ) {
+
+                updateRealtimeStatus(
+                    false,
+                    "Connection timeout"
+                );
+
+
+                console.error(
+                    "Realtime TIMED_OUT:",
+                    error
+                );
+            }
+
+
+            // --------------------------------
+            // CLOSED
+            // --------------------------------
+
+            else if (
+                status === "CLOSED"
+            ) {
+
+                updateRealtimeStatus(
+                    false,
+                    "Channel closed"
+                );
+            }
+
+        }
+    );
 }
 
 
@@ -326,9 +671,20 @@ async function startDashboard() {
     );
 
 
+    // ----------------------------------------
+    // Initial data
+    // ----------------------------------------
+
     await loadMachine();
 
     await loadTransactions();
+
+
+    // ----------------------------------------
+    // Start Realtime
+    // ----------------------------------------
+
+    startRealtime();
 
 
     console.log(
@@ -343,3 +699,4 @@ async function startDashboard() {
 // ============================================
 
 startDashboard();
+
